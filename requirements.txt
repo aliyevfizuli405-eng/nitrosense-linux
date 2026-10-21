@@ -1,0 +1,8 @@
+# Python packages for NitroSense for Linux (Python 3.9+).
+# Prefer your distro's package (see README), or: pip install --user -r requirements.txt
+PySide6>=6.4
+
+# System requirements (not installable with pip):
+#   - A recent Linux kernel with the acer_wmi driver (fan profiles, fan RPM, manual fan speed)
+#   - PipeWire with pw-cli and pw-dump (sound modes)
+#   - nvidia-smi (optional, NVIDIA GPU temperature)

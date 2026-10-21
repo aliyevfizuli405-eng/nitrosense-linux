@@ -6,7 +6,8 @@ import subprocess
 from pathlib import Path
 
 LEGACY_PROFILE = Path("/sys/firmware/acpi/platform_profile")
-DGPU_PCI = "0000:01:00.0"
+PCI_DEVICES = Path("/sys/bus/pci/devices")
+NVIDIA, AMD = "0x10de", "0x1002"
 
 # (key, label, platform_profile value)
 FAN_MODES = [
@@ -162,15 +163,47 @@ def set_fans_max():
     return None
 
 
+_dgpu_cache = []
+
+
+def _dgpu():
+    """The discrete GPU's PCI dir (NVIDIA or AMD, not the boot/iGPU), or None. Cached."""
+    if not _dgpu_cache:
+        found = None
+        for dev in sorted(PCI_DEVICES.glob("*")):
+            if not (_read(dev / "class") or "").startswith("0x03"):
+                continue
+            vendor = _read(dev / "vendor")
+            if vendor == NVIDIA or (vendor == AMD and _read(dev / "boot_vga") == "0"):
+                found = dev
+                if vendor == NVIDIA:
+                    break
+        _dgpu_cache.append(found)
+    return _dgpu_cache[0]
+
+
+def _gpu_awake():
+    dev = _dgpu()
+    # No runtime PM (e.g. GPU always on in "dGPU only" BIOS mode) counts as awake.
+    return bool(dev) and _read(dev / "power/runtime_status", "active") == "active"
+
+
 def _gpu_temp():
-    # Only ask nvidia-smi when the dGPU is already awake; querying it would wake it
+    # Only read the dGPU when it is already awake; querying it would wake it
     # up and stop runtime power management (battery drain).
-    if _read(f"/sys/bus/pci/devices/{DGPU_PCI}/power/runtime_status") != "active":
+    if not _gpu_awake():
+        return None
+    dev = _dgpu()
+    if _read(dev / "vendor") == AMD:
+        for temp in sorted(dev.glob("hwmon/hwmon*/temp1_input")):
+            t = _read_int(temp)
+            return t // 1000 if t else None
         return None
     if not shutil.which("nvidia-smi"):
         return None
     try:
-        r = subprocess.run(["nvidia-smi", "--query-gpu=temperature.gpu", "--format=csv,noheader,nounits"],
+        r = subprocess.run(["nvidia-smi", "-i", dev.name, "--query-gpu=temperature.gpu",
+                            "--format=csv,noheader,nounits"],
                            capture_output=True, text=True, timeout=2)
         return int(r.stdout.split()[0])
     except (subprocess.SubprocessError, ValueError, IndexError):
@@ -191,7 +224,7 @@ def read_sensors():
     core = _hwmon("coretemp") or _hwmon("k10temp")
     if core:
         for label in sorted(core.glob("temp*_label")):
-            if _read(label) in ("Package id 0", "Tctl"):
+            if _read(label) in ("Package id 0", "Tctl", "Tdie"):
                 t = _read_int(str(label).replace("_label", "_input"))
                 data["cpu_temp"] = t // 1000 if t else None
                 break
@@ -199,6 +232,6 @@ def read_sensors():
         t = _read_int(acer / "temp1_input")
         data["cpu_temp"] = t // 1000 if t else None
 
-    data["gpu_awake"] = _read(f"/sys/bus/pci/devices/{DGPU_PCI}/power/runtime_status") == "active"
+    data["gpu_awake"] = _gpu_awake()
     data["gpu_temp"] = _gpu_temp()
     return data

@@ -1,3 +1,4 @@
-# NitroSense for Linux: let members of "wheel" change fan settings without a password prompt.
-ACTION=="add", SUBSYSTEM=="platform-profile", RUN+="/bin/chgrp wheel /sys%p/profile", RUN+="/bin/chmod 0664 /sys%p/profile"
-ACTION=="add", SUBSYSTEM=="hwmon", ATTR{name}=="acer", RUN+="/bin/sh -c 'chgrp wheel /sys%p/pwm* && chmod 0664 /sys%p/pwm*'"
+# NitroSense for Linux: let members of "@GROUP@" change fan settings without a password prompt.
+# install.sh replaces @GROUP@ with your admin group (wheel, sudo, ...).
+ACTION=="add", SUBSYSTEM=="platform-profile", RUN+="/bin/chgrp @GROUP@ /sys%p/profile", RUN+="/bin/chmod 0664 /sys%p/profile"
+ACTION=="add", SUBSYSTEM=="hwmon", ATTR{name}=="acer", RUN+="/bin/sh -c 'chgrp @GROUP@ /sys%p/pwm* && chmod 0664 /sys%p/pwm*'"
