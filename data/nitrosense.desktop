@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=NitroSense
+GenericName=Fan & Sound Control
+Comment=Fan profiles and sound modes for Acer Nitro laptops
+Exec=nitrosense
+Icon=nitrosense
+Terminal=false
+Categories=System;Settings;HardwareSettings;
+Keywords=fan;acer;nitro;predator;equalizer;sound;
+StartupWMClass=nitrosense

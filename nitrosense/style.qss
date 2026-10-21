@@ -1,0 +1,85 @@
+QWidget {
+    background: #101014;
+    color: #e8e8ec;
+    font-size: 10pt;
+}
+QLabel#title {
+    font-size: 20pt;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #ffffff;
+}
+QLabel#titleAccent {
+    font-size: 20pt;
+    font-weight: 300;
+    letter-spacing: 3px;
+    color: #e8112d;
+}
+QFrame#card {
+    background: #18181e;
+    border: 1px solid #26262e;
+    border-radius: 10px;
+}
+QLabel#cardTitle {
+    background: transparent;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #e8112d;
+}
+QLabel#tempValue {
+    background: transparent;
+    font-size: 16pt;
+    font-weight: 700;
+}
+QLabel#tempLabel, QLabel#muted {
+    background: transparent;
+    color: #8a8a96;
+}
+QLabel#status {
+    background: transparent;
+    color: #b0b0bc;
+}
+QPushButton {
+    background: #22222a;
+    border: 1px solid #32323c;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-weight: 600;
+}
+QPushButton:hover {
+    border-color: #e8112d;
+}
+QPushButton:checked {
+    background: #e8112d;
+    border-color: #ff3b52;
+    color: #ffffff;
+}
+QPushButton:disabled {
+    color: #55555f;
+}
+QMenu {
+    background: #18181e;
+    border: 1px solid #32323c;
+}
+QMenu::item:selected {
+    background: #e8112d;
+}
+QWidget#manualPanel, QWidget#manualPanel QLabel {
+    background: transparent;
+}
+QSlider::groove:horizontal {
+    height: 6px;
+    background: #2a2a33;
+    border-radius: 3px;
+}
+QSlider::sub-page:horizontal {
+    background: #e8112d;
+    border-radius: 3px;
+}
+QSlider::handle:horizontal {
+    background: #ffffff;
+    width: 14px;
+    margin: -5px 0;
+    border-radius: 7px;
+}

@@ -1,0 +1,3 @@
+# NitroSense for Linux: let members of "wheel" change fan settings without a password prompt.
+ACTION=="add", SUBSYSTEM=="platform-profile", RUN+="/bin/chgrp wheel /sys%p/profile", RUN+="/bin/chmod 0664 /sys%p/profile"
+ACTION=="add", SUBSYSTEM=="hwmon", ATTR{name}=="acer", RUN+="/bin/sh -c 'chgrp wheel /sys%p/pwm* && chmod 0664 /sys%p/pwm*'"
